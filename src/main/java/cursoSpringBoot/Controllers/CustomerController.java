@@ -1,6 +1,9 @@
 package cursoSpringBoot.Controllers;
 
 import cursoSpringBoot.Domain.Customer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,55 +24,55 @@ public class CustomerController {
 
     //@GetMapping
     @RequestMapping(method = RequestMethod.GET)
-    public List<Customer> getCostumers() {
-        return  customers;
+    public ResponseEntity<List<Customer>> getCostumers() {
+        return ResponseEntity.ok(customers);
     }
 
     //@GetMapping("/{username}")
     @RequestMapping(method = RequestMethod.GET, value = "/{username}")
-    public Customer getCustomerByUsername(@PathVariable String username) {
+    public ResponseEntity<?> getCustomerByUsername(@PathVariable String username) {
         for (Customer c: customers) {
             if(c.getUsername().equalsIgnoreCase(username)) {
-                return  c;
+                return ResponseEntity.ok(c);
             }
         }
 
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro el usuario '" + username + "'");
     }
 
     //@PostMapping()
     @RequestMapping(method = RequestMethod.POST)
-    public Customer createCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         customers.add(customer);
-        return  customer;
+        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 
     //@PutMapping()
     @RequestMapping(method = RequestMethod.PUT)
-    public Customer updateCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {
         for (Customer c: customers) {
             if(c.getId() == customer.getId()) {
               c.setName(customer.getName());
               c.setUsername(customer.getUsername());
               c.setPassword(customer.getPassword());
-              return c;
+              return ResponseEntity.status(HttpStatus.OK).body(c);
             }
         }
 
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customer);
     }
 
     //@DeleteMapping("/{id}")
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public Customer deleteCustomer(@PathVariable int id) {
+    public ResponseEntity<Customer> deleteCustomer(@PathVariable int id) {
         for (Customer c: customers) {
             if(c.getId() == id) {
                 customers.remove(c);
-                return c;
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(c);
             }
         }
 
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
 }
