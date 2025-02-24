@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +46,15 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         customers.add(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
+        //return ResponseEntity.status(HttpStatus.CREATED).body(customer);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{username}")
+                .buildAndExpand(customer.getUsername())
+                .toUri();
+
+        return ResponseEntity.created(location).body(customer);
     }
 
     //@PutMapping()
